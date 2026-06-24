@@ -3,163 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שף פיצה של שברים - גרסת המאסטר!</title>
+    <title>ממלכת פיצת השברים של טליה!</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&family=Rubik:wght@700;900&display=swap');
 
         body {
             font-family: 'Rubik', 'Assistant', sans-serif;
-            background-color: #1a1a2e;
+            background: radial-gradient(circle, #2b1055, #7597de);
             color: #fff;
             text-align: center;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
         h1 {
-            color: #ff4500;
-            font-size: 2.8rem;
+            color: #ffbc00;
+            font-size: 3rem;
             margin-bottom: 5px;
-            text-shadow: 0 4px 10px rgba(255, 69, 0, 0.4);
+            text-shadow: 0 4px 15px rgba(255, 188, 0, 0.4);
         }
 
-        #subtitle {
-            font-size: 1.1rem;
-            color: #e0e0e0;
-            margin-bottom: 20px;
+        /* כפתור מוזיקה */
+        #music-control {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #fff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.2s;
+        }
+        #music-control:hover {
+            background: white;
+            color: #2b1055;
         }
 
-        #game-container {
+        /* מסכים */
+        .screen {
+            display: none;
             max-width: 600px;
-            margin: 0 auto;
-            background: #162447;
-            padding: 25px;
-            border-radius: 25px;
-            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-            border: 2px solid #0f4c75;
+            margin: 30px auto;
+            background: rgba(22, 36, 71, 0.95);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border: 3px solid #ffbc00;
         }
 
-        #order-box {
-            background-color: #1f4068;
-            padding: 20px;
-            border-radius: 15px;
+        .screen.active {
+            display: block;
+        }
+
+        /* כפתורי תפריט */
+        .menu-btn {
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 15px 30px;
             font-size: 1.4rem;
-            margin-bottom: 20px;
-            border: 3px dashed #e43f5a;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            font-weight: bold;
+            border-radius: 20px;
+            margin: 10px;
+            cursor: pointer;
+            width: 80%;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
         }
 
+        .menu-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 69, 0, 0.6);
+        }
+
+        .home-btn {
+            background: #e43f5a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* אזור דמויות */
+        #customer-zone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1f4068;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #00bfff;
+        }
+
+        #customer-avatar {
+            font-size: 4rem;
+            margin-left: 20px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        #customer-bubble {
+            background: white;
+            color: #333;
+            padding: 15px;
+            border-radius: 15px;
+            position: relative;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: right;
+        }
+
+        /* שברים */
         .fraction {
             display: inline-block;
             vertical-align: middle;
             text-align: center;
             font-weight: 900;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #e43f5a;
             direction: ltr; 
-            margin: 0 10px;
-            background: #fff;
-            padding: 5px 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin: 0 5px;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 8px;
         }
-        .numerator { border-bottom: 4px solid #162447; padding: 0 5px; color: #e43f5a; }
-        .denominator { padding: 0 5px; color: #162447; }
+        .numerator { border-bottom: 3px solid #162447; padding: 0 3px; }
+        .denominator { padding: 0 3px; }
 
+        /* פיצה */
         #pizza-wrapper {
             position: relative;
-            width: 320px;
-            height: 320px;
-            margin: 25px auto;
+            width: 280px;
+            height: 280px;
+            margin: 20px auto;
             background: #cd853f; 
             border-radius: 50%;
-            padding: 12px;
+            padding: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             box-sizing: border-box;
         }
 
-        svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
+        svg { width: 100%; height: 100%; display: block; }
 
         .slice {
             fill: #fff0d4;
             stroke: #d0a370;
             stroke-width: 1.5;
             cursor: pointer;
-            transition: fill 0.15s, transform 0.1s;
+            transition: fill 0.1s;
         }
 
-        .slice:hover {
-            fill: #ffe4b5;
-            filter: brightness(1.05);
+        .slice:hover { fill: #ffe4b5; }
+        .slice.pepperoni { fill: url(#pepperoni-pattern); }
+
+        /* פופ-אפים */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            z-index: 1000;
+            width: 80%;
+            max-width: 400px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .slice.pepperoni {
-            fill: url(#pepperoni-pattern);
+        .modal.active {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
         }
 
-        #controls {
-            margin-top: 25px;
+        .modal h2 { margin-top: 0; font-size: 2rem; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
         }
+        .modal-overlay.active { display: block; }
 
-        button {
+        .serve-btn {
             background: linear-gradient(135deg, #4caf50, #2e7d32);
-            color: white;
-            border: none;
-            padding: 14px 40px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: inherit;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-            transition: all 0.2s;
-        }
-
-        button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(76, 175, 80, 0.6);
-        }
-        button:active { transform: translateY(1px); }
-
-        #feedback {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            min-height: 40px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: white; border: none; padding: 12px 35px;
+            font-size: 1.3rem; font-weight: bold; border-radius: 25px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(76,175,80,0.4);
         }
 
         #stats-bar {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid #0f4c75;
-            font-size: 1.2rem;
+            display: flex; justify-content: space-around; margin-top: 20px;
+            font-size: 1.1rem; background: #1f4068; padding: 10px; border-radius: 15px;
         }
 
-        .stat-box {
-            background: #1f4068;
-            padding: 10px 15px;
-            border-radius: 12px;
-            min-width: 100px;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
-        /* אפקט קונפטי חגיגי */
         .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            animation: fall 2s linear forwards;
-            pointer-events: none;
-            z-index: 999;
+            position: absolute; width: 10px; height: 10px;
+            animation: fall 1.5s linear forwards; pointer-events: none; z-index: 9999;
         }
-
         @keyframes fall {
             0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
@@ -168,18 +228,34 @@
 </head>
 <body>
 
-    <h1>🍕 שף פיצה: אתגר המאסטר! 🍕</h1>
-    <div id="subtitle">רמת קושי: מתקדמת (כולל צמצום שברים וחיתוכים מורכבים!)</div>
-    
-    <div id="game-container">
-        <div id="order-box">
-            <span>הלקוח רוצה שחלק של </span>
-            <div class="fraction">
-                <div class="numerator" id="req-num">1</div>
-                <div class="denominator" id="req-den">2</div>
+    <button id="music-control" onclick="toggleMusic()">🎵 מוזיקה: כבויה</button>
+
+    <h1>🍕 מטבח הפיצה של טליה! 🍕</h1>
+
+    <!-- מסך בית -->
+    <div id="home-screen" class="screen active">
+        <h2>ברוכה הבאה השפית טליה! בחרי רמת קושי:</h2>
+        <button class="menu-btn" onclick="startGame('easy')">👶 טליה המתחילה (קל מאוד)</button>
+        <button class="menu-btn" onclick="startGame('medium')">👨‍🍳 טליה הסו-שפית (בינוני)</button>
+        <button class="menu-btn" onclick="startGame('hard')">👑 טליה המאסטר שפית (קשה)</button>
+        <button class="menu-btn" onclick="startGame('expert')">👾 טליה נגד מפלצת השברים (מומחה!)</button>
+    </div>
+
+    <!-- מסך משחק -->
+    <div id="game-screen" class="screen">
+        <button class="home-btn" onclick="returnToHome()">🏠 חזרה למסך הבית</button>
+        
+        <div id="customer-zone">
+            <div id="customer-avatar">🦊</div>
+            <div id="customer-bubble">
+                <span id="customer-name">שועל רעב</span>: "היי השפית טליה! אני רוצה שחלק של 
+                <div class="fraction">
+                    <div class="numerator" id="req-num">1</div>
+                    <div class="denominator" id="req-den">2</div>
+                </div>
+                מהפיצה שלי יהיה עם פפרוני!"
+                <div id="hint-text" style="font-size: 0.85rem; color: #ff8c00; margin-top: 5px;"></div>
             </div>
-            <span> מהפיצה כולה יהיה עם פפרוני!</span>
-            <div id="hint-text" style="font-size: 0.95rem; color: #ffbc00; margin-top: 8px; font-weight: bold;"></div>
         </div>
 
         <div id="pizza-wrapper">
@@ -187,184 +263,285 @@
                 <defs>
                     <pattern id="pepperoni-pattern" width="15" height="15" patternUnits="userSpaceOnUse">
                         <rect width="15" height="15" fill="#e43f5a"/>
-                        <circle cx="4" cy="4" r="2.5" fill="#a30000"/>
-                        <circle cx="11" cy="10" r="2" fill="#a30000"/>
+                        <circle cx="4" cy="4" r="2" fill="#900"/>
+                        <circle cx="11" cy="10" r="2" fill="#900"/>
                     </pattern>
                 </defs>
                 <g id="slices-group"></g>
             </svg>
         </div>
 
-        <div id="feedback"></div>
-
-        <div id="controls">
-            <button onclick="checkAnswer()">בדוק והגש פיצה! 🍽️</button>
-        </div>
+        <button class="serve-btn" onclick="checkAnswer()">טליה, הגשי את הפיצה! 🍽️</button>
 
         <div id="stats-bar">
-            <div class="stat-box">⭐ ניקוד: <span id="score" style="color: #4caf50; font-weight:bold;">0</span></div>
-            <div class="stat-box">🔥 רצף (Streak): <span id="streak" style="color: #ffbc00; font-weight:bold;">0</span></div>
-            <div class="stat-box">👑 תואר: <span id="rank" style="color: #00bfff; font-weight:bold;">שף מתחיל</span></div>
+            <div>⭐ ניקוד של טליה: <span id="score" style="color:#4caf50;">0</span></div>
+            <div>🔥 רצף הצלחות: <span id="streak" style="color:#ffbc00;">0</span></div>
         </div>
     </div>
 
+    <!-- פופ-אפים -->
+    <div id="modal-overlay" class="modal-overlay"></div>
+    
+    <div id="success-modal" class="modal" style="border: 5px solid #4caf50;">
+        <h2 style="color: #4caf50;">🎉 כל הכבוד, טליה! 🎉</h2>
+        <p id="success-text" style="font-size: 1.2rem; font-weight: bold;"></p>
+        <span style="font-size: 4rem;">🤩</span>
+        <br><br>
+        <button class="serve-btn" onclick="closeModal('success-modal')">הלקוח הבא מחכה לטליה! ←</button>
+    </div>
+
+    <div id="fail-modal" class="modal" style="border: 5px solid #e43f5a;">
+        <h2 style="color: #6a7b95;">💡 לא נורא, טליה!</h2>
+        <p id="fail-text" style="font-size: 1.1rem; color: #555;"></p>
+        <span style="font-size: 4rem;">🧐</span>
+        <br><br>
+        <button class="menu-btn" style="width: auto; padding: 10px 20px; background: linear-gradient(135deg, #6c757d, #495057);" onclick="closeModal('fail-modal')">טליה מנסה שוב! 💪</button>
+    </div>
+
     <script>
-        let score = 0;
-        let streak = 0;
-        let currentDenominator = 4; // לכמה פרוסות הפיצה חתוכה בפועל
-        let targetFractionNum = 1;  // המונה שהלקוח ביקש
-        let targetFractionDen = 2;  // המכנה שהלקוח ביקש
-        let requiredSlicesToTop = 0;// כמה פרוסות בפועל צריך למלא
-        let toppedSlices = 0;
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicNodes = []; 
 
-        const slicesGroup = document.getElementById('slices-group');
-        const reqNum = document.getElementById('req-num');
-        const reqDen = document.getElementById('req-den');
-        const hintText = document.getElementById('hint-text');
-        const feedback = document.getElementById('feedback');
-        const scoreDisplay = document.getElementById('score');
-        const streakDisplay = document.getElementById('streak');
-        const rankDisplay = document.getElementById('rank');
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
 
-        // רמות חיתוך מתקדמות ומאתגרות יותר
-        const baseDenominators = [2, 3, 4, 5, 6, 8, 12];
+        function playSound(type) {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            if (type === 'success') {
+                let freqs = [523.25, 659.25, 783.99, 1046.50];
+                freqs.forEach((f, i) => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime + i*0.08);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i*0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start(audioCtx.currentTime + i*0.08);
+                    osc.stop(audioCtx.currentTime + 0.5);
+                });
+            } else if (type === 'fail') {
+                let freqs = [392.00, 311.13, 261.63]; 
+                freqs.forEach((f, i) => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine'; 
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime + i*0.1);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + i*0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    osc.start(audioCtx.currentTime + i*0.1);
+                    osc.stop(audioCtx.currentTime + 0.6);
+                });
+            }
+        }
+
+        function startBackgroundMusic() {
+            initAudio();
+            if (isMusicPlaying) return;
+            isMusicPlaying = true;
+            document.getElementById('music-control').textContent = "🎵 מוזיקה: מופעלת";
+
+            let tempo = 120; 
+            let quarterNote = 60 / tempo;
+            let step = 0;
+
+            let notes = [261.63, 293.66, 329.63, 392.00, 349.23, 329.63, 293.66, 261.63];
+
+            function playNextBar() {
+                if (!isMusicPlaying) return;
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'triangle'; 
+                osc.connect(gain); gain.connect(audioCtx.destination);
+
+                let currentNote = notes[step % notes.length];
+                if(step % 4 === 0) currentNote *= 0.5; 
+                
+                osc.frequency.setValueAtTime(currentNote, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime); 
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + quarterNote * 0.8);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + quarterNote * 0.8);
+                
+                musicNodes.push(osc);
+                step++;
+                
+                setTimeout(playNextBar, quarterNote * 1000);
+            }
+            playNextBar();
+        }
+
+        function stopBackgroundMusic() {
+            isMusicPlaying = false;
+            document.getElementById('music-control').textContent = "🎵 מוזיקה: כבויה";
+            musicNodes.forEach(node => { try { node.stop(); } catch(e){} });
+            musicNodes = [];
+        }
+
+        function toggleMusic() {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (isMusicPlaying) {
+                stopBackgroundMusic();
+            } else {
+                startBackgroundMusic();
+            }
+        }
+
+        // מאגר לקוחות שפונים לטליה
+        const customers = [
+            { name: "מפלצת הגבינה", avatar: "👹", greet: "היי שפית טליה! תכיני לי בבקשה " },
+            { name: "חד-קרן רעב", avatar: "🦄", greet: "טליה המוכשרת! אני רוצה בדיוק " },
+            { name: "חתול הפיצות", avatar: "🐱", greet: "מיאו טליה! המלכות מבקשת " },
+            { name: "חייזר השברים", avatar: "👽", greet: "שלום טליה מכדור הארץ! אני צריך " },
+            { name: "דובי הרוטב", avatar: "🐻", greet: "יאמי טליה! תוכלי להכין לי " }
+        ];
+
+        let currentLevel = 'easy';
+        let score = 0; let streak = 0;
+        let currentDenominator = 4; let requiredSlicesToTop = 0; let toppedSlices = 0;
+
+        const baseLevels = {
+            easy: [2, 4],
+            medium: [3, 4, 6, 8],
+            hard: [5, 6, 8, 12],
+            expert: [7, 9, 11, 12]
+        };
+
+        function startGame(level) {
+            initAudio();
+            currentLevel = level;
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            startNewRound();
+        }
+
+        function returnToHome() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('home-screen').classList.add('active');
+        }
+
+        Math.gcd = (a, b) => b ? Math.gcd(b, a % b) : a;
 
         function startNewRound() {
-            feedback.innerHTML = "";
             toppedSlices = 0;
             
-            // 1. קביעת החיתוך הפיזי של הפיצה (כמה פרוסות יהיו על המסך)
-            currentDenominator = baseDenominators[Math.floor(Math.random() * baseDenominators.length)];
-            
-            // 2. הגרלת מספר הפרוסות שצריך למלא בפועל
+            const customer = customers[Math.floor(Math.random() * customers.length)];
+            document.getElementById('customer-avatar').textContent = customer.avatar;
+            document.getElementById('customer-name').textContent = customer.name;
+
+            const choices = baseLevels[currentLevel];
+            currentDenominator = choices[Math.floor(Math.random() * choices.length)];
             requiredSlicesToTop = Math.floor(Math.random() * currentDenominator) + 1;
 
-            // 3. יצירת האתגר המתמטי: מציגים לילד שבר מצומצם במידת האפשר!
-            let gcd = Math.gcd(requiredSlicesToTop, currentDenominator);
-            targetFractionNum = requiredSlicesToTop / gcd;
-            targetFractionDen = currentDenominator / gcd;
-
-            // עדכון הטקסטים
-            reqNum.textContent = targetFractionNum;
-            reqDen.textContent = targetFractionDen;
-
-            // הוספת רמז מאתגר אם יש צמצום שברים
-            if (currentDenominator !== targetFractionDen) {
-                hintText.textContent = `💡 שים לב! הפיצה חתוכה ל-${currentDenominator} פרוסות שוות!`;
-            } else {
-                hintText.textContent = `הפיצה חתוכה ל-${currentDenominator} פרוסות.`;
+            let targetFractionNum = requiredSlicesToTop;
+            let targetFractionDen = currentDenominator;
+            
+            if (currentLevel === 'hard' || currentLevel === 'expert' || Math.random() > 0.5) {
+                let gcd = Math.gcd(requiredSlicesToTop, currentDenominator);
+                targetFractionNum = requiredSlicesToTop / gcd;
+                targetFractionDen = currentDenominator / gcd;
             }
+
+            // החלפת הטקסט של בועת הדיבור של הלקוח בצורה דינמית
+            const bubble = document.getElementById('customer-bubble');
+            bubble.innerHTML = `<span id="customer-name">${customer.name}</span>: "${customer.greet} 
+                <div class="fraction">
+                    <div class="numerator" id="req-num">${targetFractionNum}</div>
+                    <div class="denominator" id="req-den">${targetFractionDen}</div>
+                </div> 
+                מהפיצה שלי עם פפרוני!"
+                <div id="hint-text" style="font-size: 0.85rem; color: #ff8c00; margin-top: 5px;">(טליה, הפיצה חתוכה ל-${currentDenominator} פרוסות!)</div>`;
 
             buildPizza();
         }
 
-        // פונקציית מתמטית למציאת מחלק משותף מכסימלי לצמצום שברים
-        Math.gcd = function(a, b) {
-            return b ? Math.gcd(b, a % b) : a;
-        };
-
         function getSlicePath(x, y, radius, startAngle, endAngle) {
             const startRad = (startAngle - 90) * Math.PI / 180.0;
             const endRad = (endAngle - 90) * Math.PI / 180.0;
-            
             const x1 = x + radius * Math.cos(startRad);
             const y1 = y + radius * Math.sin(startRad);
             const x2 = x + radius * Math.cos(endRad);
             const y2 = y + radius * Math.sin(endRad);
-            
             const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
             return `M ${x} ${y} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
         }
 
         function buildPizza() {
-            slicesGroup.innerHTML = '';
+            const group = document.getElementById('slices-group');
+            group.innerHTML = '';
             const angleStep = 360 / currentDenominator;
 
             for (let i = 0; i < currentDenominator; i++) {
                 const startAngle = i * angleStep;
                 const endAngle = startAngle + angleStep;
-                
                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                const d = getSlicePath(50, 50, 48, startAngle, endAngle);
-                
-                path.setAttribute("d", d);
+                path.setAttribute("d", getSlicePath(50, 50, 48, startAngle, endAngle));
                 path.classList.add("slice");
 
                 path.addEventListener('click', () => {
                     if (path.classList.contains('pepperoni')) {
-                        path.classList.remove('pepperoni');
-                        toppedSlices--;
+                        path.classList.remove('pepperoni'); toppedSlices--;
                     } else {
-                        path.classList.add('pepperoni');
-                        toppedSlices++;
+                        path.classList.add('pepperoni'); toppedSlices++;
                     }
                 });
-
-                slicesGroup.appendChild(path);
+                group.appendChild(path);
             }
         }
 
-        function updateRank() {
-            if (score >= 15) {
-                rankDisplay.textContent = "👑 מאסטר שף פיצה!";
-                rankDisplay.style.color = "#ff4500";
-            } else if (score >= 8) {
-                rankDisplay.textContent = "🍳 שף פיצרייה מקצוען";
-                rankDisplay.style.color = "#ffbc00";
-            } else if (score >= 3) {
-                rankDisplay.textContent = "🍕 עוזר שף מתקדם";
-                rankDisplay.style.color = "#00bfff";
-            } else {
-                rankDisplay.textContent = "👨‍🍳 שף מתחיל";
-                rankDisplay.style.color = "#fff";
-            }
-        }
-
-        // פונקציית בונוס ליצירת קונפטי חגיגי בניצחון
         function spawnConfetti() {
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<30; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
                 confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = ['#ff0', '#f0f', '#0ff', '#0f0', '#ff4500'][Math.floor(Math.random() * 5)];
-                confetti.style.transform = `scale(${Math.random() * 1 + 0.5})`;
-                confetti.style.animationDelay = Math.random() * 0.4 + 's';
+                confetti.style.backgroundColor = ['#ffbc00', '#ff4500', '#4caf50', '#00bfff'][Math.floor(Math.random() * 4)];
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
                 document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 2000);
+                setTimeout(() => confetti.remove(), 1500);
             }
         }
 
         function checkAnswer() {
             if (toppedSlices === requiredSlicesToTop) {
-                streak++;
-                score += 1 + Math.floor(streak / 3); // בונוס נקודות על רצף הצלחות!
-                
-                let winMessages = [
-                    "🏆 מדהים! פיצחת את השבר המצומצם!",
-                    "🔥 מטורף! דיוק של מאסטר שף!",
-                    "🎉 גאוני! הלקוח מרוצה עד הגג!",
-                    "🌟 כל הכבוד! מתמטיקה טעימה במיוחד!"
-                ];
-                let msg = winMessages[Math.floor(Math.random() * winMessages.length)];
-                
-                feedback.innerHTML = `<span style='color: #4caf50;'>${msg} (+${1 + Math.floor(streak / 3)} נקודות)</span>`;
-                
-                scoreDisplay.textContent = score;
-                streakDisplay.textContent = streak;
-                updateRank();
+                playSound('success');
                 spawnConfetti();
+                streak++;
+                score += 10 + (streak * 2);
                 
-                setTimeout(startNewRound, 2500);
+                document.getElementById('success-text').innerHTML = `טליה, ההזמנה שהכנת מושלמת!<br>שמת בדיוק ${toppedSlices}/${currentDenominator} פפרוני!<br>צברת עוד נקודות בונוס!`;
+                showModal('success-modal');
+                
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
             } else {
-                streak = 0; // הרצף נקטע
-                streakDisplay.textContent = streak;
+                playSound('fail');
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
                 
-                // הסבר לימודי מדויק מה הייתה הטעות
-                feedback.innerHTML = `<span style='color: #e43f5a;'>אופס! שמת פפרוני על ${toppedSlices}/${currentDenominator} מהפיצה.<br>השבר המבוקש היה שווה ל-${requiredSlicesToTop}/${currentDenominator}. נסה שוב! 💪</span>`;
+                document.getElementById('fail-text').innerHTML = `טליה, שמת פפרוני על ${toppedSlices}/${currentDenominator} מהפיצה.<br>הלקוח ביקש כמות ששווה ל-<b>${requiredSlicesToTop}/${currentDenominator}</b>.<br>אין דבר, טליה אלופה ותצליח בניסיון הבא!`;
+                showModal('fail-modal');
             }
         }
 
-        startNewRound();
+        function showModal(id) {
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById(id).classList.remove('active');
+            if (id === 'success-modal' || id === 'fail-modal') startNewRound();
+        }
     </script>
 </body>
 </html>
