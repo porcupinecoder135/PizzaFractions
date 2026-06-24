@@ -45,15 +45,6 @@
             color: #2b1055;
         }
 
-        /* נגן יוטיוב מוסתר */
-        #yt-player-container {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
         /* מסכים */
         .screen {
             display: none;
@@ -220,6 +211,41 @@
             font-size: 1.1rem; background: #1f4068; padding: 10px; border-radius: 15px;
         }
 
+        /* עיצוב ארון פרסים */
+        #prizes-shelf {
+            margin-top: 20px;
+            background: #162447;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid #ffbc00;
+        }
+        .prize-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .prize-item {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.2;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        .prize-item.unlocked {
+            opacity: 1;
+            background: rgba(255, 188, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 188, 0, 0.5);
+            transform: scale(1.1);
+        }
+
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -237,13 +263,7 @@
 </head>
 <body>
 
-    <!-- כפתור שליטה במוזיקה עבור טליה -->
-    <button id="music-control" onclick="toggleMusic()">🎵 מוזיקה: מופעלת</button>
-
-    <!-- מיקום נגן המדיה המוסתר -->
-    <div id="yt-player-container">
-        <div id="player"></div>
-    </div>
+    <button id="music-control" onclick="toggleMusic()">🎵 מוזיקה: כבויה</button>
 
     <h1>🍕 מטבח הפיצה של טליה! 🍕</h1>
 
@@ -254,6 +274,19 @@
         <button class="menu-btn" onclick="startGame('medium')">👨‍🍳 טליה הסו-שפית (בינוני)</button>
         <button class="menu-btn" onclick="startGame('hard')">👑 טליה המאסטר שפית (קשה)</button>
         <button class="menu-btn" onclick="startGame('expert')">👾 טליה נגד מפלצת השברים (מומחה!)</button>
+
+        <!-- ארון פרסים במסך הראשי -->
+        <div id="prizes-shelf">
+            <h3>🏆 ארון הפרסים והפרסים של טליה:</h3>
+            <div class="prize-grid">
+                <div class="prize-item" id="prize-1" title="מערוך הזהב של טליה">🥖</div>
+                <div class="prize-item" id="prize-2" title="פטרית הקסם האלופה">🍄</div>
+                <div class="prize-item" id="prize-3" title="רוטב סודי מנצנץ">🥫</div>
+                <div class="prize-item" id="prize-4" title="בצק דיסקו זוהר">✨</div>
+                <div class="prize-item" id="prize-5" title="כתר מאסטר שפית שברים">👑</div>
+            </div>
+            <p id="prize-status-text" style="font-size:0.9rem; margin-top:10px; color:#ffbc00;"></p>
+        </div>
     </div>
 
     <!-- מסך משחק -->
@@ -263,11 +296,11 @@
         <div id="customer-zone">
             <div id="customer-avatar">🦊</div>
             <div id="customer-bubble">
-                <span id="customer-name">שועל רעב</span>: "היי שפית טליה! אני רוצה שחלק של 
+                <span id="customer-name">שועל רעב</span>: "היי השפית טליה! אני רוצה שחלק של 
                 <div class="fraction">
                     <div class="numerator" id="req-num">1</div>
                     <div class="denominator" id="req-den">2</div>
-                </div>
+                </div> 
                 מהפיצה שלי יהיה עם פפרוני!"
                 <div id="hint-text" style="font-size: 0.85rem; color: #ff8c00; margin-top: 5px;"></div>
             </div>
@@ -300,71 +333,26 @@
     <div id="success-modal" class="modal" style="border: 5px solid #4caf50;">
         <h2 style="color: #4caf50;">🎉 כל הכבוד, טליה! 🎉</h2>
         <p id="success-text" style="font-size: 1.2rem; font-weight: bold;"></p>
-        <span style="font-size: 4rem;">🤩</span>
+        <p id="prize-unlock-text" style="color: #ffbc00; font-weight: bold;"></p>
+        <span id="success-emoji" style="font-size: 4rem;">🤩</span>
         <br><br>
         <button class="serve-btn" onclick="closeModal('success-modal')">הלקוח הבא מחכה לטליה! ←</button>
     </div>
 
     <div id="fail-modal" class="modal" style="border: 5px solid #e43f5a;">
-        <h2 style="color: #6a7b95;">💡 לא נורא, טליה!</h2>
-        <p id="fail-text" style="font-size: 1.1rem; color: #555;"></p>
+        <h2 style="color: #e43f5a;">💡 טליה, בואי נתקן ביחד!</h2>
+        <p id="fail-text" style="font-size: 1.1rem; color: #333;"></p>
+        <p id="helper-text" style="font-weight: bold; color: #162447; background:#fff0d4; padding:8px; border-radius:10px;"></p>
         <span style="font-size: 4rem;">🧐</span>
         <br><br>
-        <button class="menu-btn" style="width: auto; padding: 10px 20px; background: linear-gradient(135deg, #6c757d, #495057);" onclick="closeModal('fail-modal')">טליה מנסה שוב! 💪</button>
+        <button class="menu-btn" style="width: auto; padding: 10px 20px; background: linear-gradient(135deg, #4caf50, #2e7d32);" onclick="closeModal('fail-modal')">אני מתקנת עכשיו! 💪</button>
     </div>
 
     <script>
-        // חיבור ל-API הרשמי של YouTube לשליטה בנגינה ברקע
-        let player;
-        let isMusicPlaying = true; // ברירת מחדל: מופעלת
         let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicNodes = []; 
 
-        // טעינת ה-API של יוטיוב
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '1',
-                width: '1',
-                videoId: 'La4SaT461WI', // מזהה הסרטון של מריו
-                playerVars: {
-                    'autoplay': 1,
-                    'loop': 1,
-                    'playlist': 'La4SaT461WI', // נדרש כדי שהלולאה תעבוד ביוטיוב
-                    'controls': 0,
-                    'showinfo': 0,
-                    'modestbranding': 1
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.setVolume(20); // הגדרת עוצמת קול חלשה ונעימה (20 מתוך 100)
-            if (isMusicPlaying) {
-                event.target.playVideo();
-            }
-        }
-
-        function toggleMusic() {
-            if (!player) return;
-            if (isMusicPlaying) {
-                player.pauseVideo();
-                isMusicPlaying = false;
-                document.getElementById('music-control').textContent = "🎵 מוזיקה: כבויה";
-            } else {
-                player.playVideo();
-                isMusicPlaying = true;
-                document.getElementById('music-control').textContent = "🎵 מוזיקה: מופעלת";
-            }
-        }
-
-        // אפקטים קוליים רכים (הצלחה/הפסד)
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -388,18 +376,73 @@
                     osc.stop(audioCtx.currentTime + 0.5);
                 });
             } else if (type === 'fail') {
-                let freqs = [392.00, 311.13, 261.63]; 
+                let freqs = [349.23, 293.66]; 
                 freqs.forEach((f, i) => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
                     osc.type = 'sine'; 
                     osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.frequency.setValueAtTime(f, audioCtx.currentTime + i*0.1);
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + i*0.1);
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime + i*0.12);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + i*0.12);
                     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                    osc.start(audioCtx.currentTime + i*0.1);
+                    osc.start(audioCtx.currentTime + i*0.12);
                     osc.stop(audioCtx.currentTime + 0.6);
                 });
+            }
+        }
+
+        function startBackgroundMusic() {
+            initAudio();
+            if (isMusicPlaying) return;
+            isMusicPlaying = true;
+            document.getElementById('music-control').textContent = "🎵 מוזיקה: מופעלת";
+
+            let tempo = 120; 
+            let quarterNote = 60 / tempo;
+            let step = 0;
+
+            let notes = [261.63, 293.66, 329.63, 392.00, 349.23, 329.63, 293.66, 261.63];
+
+            function playNextBar() {
+                if (!isMusicPlaying) return;
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'triangle'; 
+                osc.connect(gain); gain.connect(audioCtx.destination);
+
+                let currentNote = notes[step % notes.length];
+                if(step % 4 === 0) currentNote *= 0.5; 
+                
+                osc.frequency.setValueAtTime(currentNote, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime); 
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + quarterNote * 0.8);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + quarterNote * 0.8);
+                
+                musicNodes.push(osc);
+                step++;
+                
+                setTimeout(playNextBar, quarterNote * 1000);
+            }
+            playNextBar();
+        }
+
+        function stopBackgroundMusic() {
+            isMusicPlaying = false;
+            document.getElementById('music-control').textContent = "🎵 מוזיקה: כבויה";
+            musicNodes.forEach(node => { try { node.stop(); } catch(e){} });
+            musicNodes = [];
+        }
+
+        function toggleMusic() {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (isMusicPlaying) {
+                stopBackgroundMusic();
+            } else {
+                startBackgroundMusic();
             }
         }
 
@@ -409,12 +452,29 @@
             { name: "חד-קרן רעב", avatar: "🦄", greet: "טליה המוכשרת! אני רוצה בדיוק " },
             { name: "חתול הפיצות", avatar: "🐱", greet: "מיאו טליה! המלכות מבקשת " },
             { name: "חייזר השברים", avatar: "👽", greet: "שלום טליה מכדור הארץ! אני צריך " },
-            { name: "דובי השוקולד", avatar: "🐻", greet: "יאמי טליה! תוכלי להכין לי " }
+            { name: "דובי הרוטב", avatar: "🐻", greet: "יאמי טליה! תוכלי להכין לי " }
         ];
 
+        // הגדרת הפרסים ומחיריהם בנקודות
+        const prizeList = [
+            { id: "prize-1", name: "🥖 מערוך הזהב", cost: 30 },
+            { id: "prize-2", name: "🍄 פטרית הקסם", cost: 70 },
+            { id: "prize-3", name: "🥫 רוטב סודי", cost: 120 },
+            { id: "prize-4", name: "✨ בצק דיסקו זוהר", cost: 200 },
+            { id: "prize-5", name: "👑 כתר מאסטר שפית שברים", cost: 350 }
+        ];
+
+        // טעינת התקדמות שמורה של טליה או אתחול מחדש
+        let score = parseInt(localStorage.getItem('talia_pizza_score')) || 0;
+        let streak = parseInt(localStorage.getItem('talia_pizza_streak')) || 0;
+        let unlockedPrizes = JSON.parse(localStorage.getItem('talia_pizza_prizes')) || [];
+
         let currentLevel = 'easy';
-        let score = 0; let streak = 0;
-        let currentDenominator = 4; let requiredSlicesToTop = 0; let toppedSlices = 0;
+        let currentDenominator = 4; 
+        let requiredSlicesToTop = 0; 
+        let toppedSlices = 0;
+        let targetFractionNum = 0;
+        let targetFractionDen = 0;
 
         const baseLevels = {
             easy: [2, 4],
@@ -423,11 +483,54 @@
             expert: [7, 9, 11, 12]
         };
 
+        // עדכון תצוגה ראשונית
+        updateStatsDisplay();
+        renderPrizesShelf();
+
+        function saveProgress() {
+            localStorage.setItem('talia_pizza_score', score);
+            localStorage.setItem('talia_pizza_streak', streak);
+            localStorage.setItem('talia_pizza_prizes', JSON.stringify(unlockedPrizes));
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function renderPrizesShelf() {
+            prizeList.forEach(prize => {
+                const element = document.getElementById(prize.id);
+                if (unlockedPrizes.includes(prize.id)) {
+                    element.classList.add('unlocked');
+                } else {
+                    element.classList.remove('unlocked');
+                }
+            });
+
+            // כתיבת טקסט המציג לטליה כמה פרסים פתוחים
+            document.getElementById('prize-status-text').textContent = 
+                `טליה פתחה ${unlockedPrizes.length} מתוך ${prizeList.length} הפתעות מטבח מיוחדות!`;
+        }
+
+        function checkForNewPrizes() {
+            let newlyUnlocked = [];
+            prizeList.forEach(prize => {
+                if (score >= prize.cost && !unlockedPrizes.includes(prize.id)) {
+                    unlockedPrizes.push(prize.id);
+                    newlyUnlocked.push(prize.name);
+                }
+            });
+            if (newlyUnlocked.length > 0) {
+                saveProgress();
+                renderPrizesShelf();
+                return newlyUnlocked;
+            }
+            return null;
+        }
+
         function startGame(level) {
             initAudio();
-            // הפעלת מוזיקה לפי הצורך ברגע האינטראקציה הראשון
-            if (player && isMusicPlaying) { try { player.playVideo(); } catch(e){} }
-            
             currentLevel = level;
             document.getElementById('home-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
@@ -437,6 +540,7 @@
         function returnToHome() {
             document.getElementById('game-screen').classList.remove('active');
             document.getElementById('home-screen').classList.add('active');
+            renderPrizesShelf();
         }
 
         Math.gcd = (a, b) => b ? Math.gcd(b, a % b) : a;
@@ -452,15 +556,17 @@
             currentDenominator = choices[Math.floor(Math.random() * choices.length)];
             requiredSlicesToTop = Math.floor(Math.random() * currentDenominator) + 1;
 
-            let targetFractionNum = requiredSlicesToTop;
-            let targetFractionDen = currentDenominator;
+            targetFractionNum = requiredSlicesToTop;
+            targetFractionDen = currentDenominator;
             
+            // צמצום שברים ברמות קשות כדי לאתגר את טליה באלגנטיות
             if (currentLevel === 'hard' || currentLevel === 'expert' || Math.random() > 0.5) {
                 let gcd = Math.gcd(requiredSlicesToTop, currentDenominator);
                 targetFractionNum = requiredSlicesToTop / gcd;
                 targetFractionDen = currentDenominator / gcd;
             }
 
+            // עדכון בועת הלקוח
             const bubble = document.getElementById('customer-bubble');
             bubble.innerHTML = `<span id="customer-name">${customer.name}</span>: "${customer.greet} 
                 <div class="fraction">
@@ -524,19 +630,46 @@
                 playSound('success');
                 spawnConfetti();
                 streak++;
-                score += 10 + (streak * 2);
+                let addedPoints = 10 + (streak * 2);
+                score += addedPoints;
                 
-                document.getElementById('success-text').innerHTML = `טליה, ההזמנה שהכנת מושלמת!<br>שמת בדיוק ${toppedSlices}/${currentDenominator} פפרוני!<br>צברת עוד נקודות בונוס!`;
+                document.getElementById('success-text').innerHTML = `טליה, ההזמנה שהכנת מושלמת!<br>שמת בדיוק ${toppedSlices}/${currentDenominator} פפרוני!<br>הרווחת <b>${addedPoints}</b> נקודות!`;
+                
+                // בדיקת פרסים חדשים
+                let prizesWon = checkForNewPrizes();
+                let prizeModalText = document.getElementById('prize-unlock-text');
+                let emojiContainer = document.getElementById('success-emoji');
+                
+                if (prizesWon) {
+                    prizeModalText.innerHTML = `🎁 וואו, טליה! פתחת פרס חדש במטבח שלך:<br>🌟 ${prizesWon.join(', ')} 🌟`;
+                    emojiContainer.textContent = "🏆";
+                } else {
+                    prizeModalText.innerHTML = "";
+                    emojiContainer.textContent = "🤩";
+                }
+
+                saveProgress();
+                updateStatsDisplay();
                 showModal('success-modal');
-                
-                document.getElementById('score').textContent = score;
-                document.getElementById('streak').textContent = streak;
             } else {
                 playSound('fail');
+                // הרצף מתאפס, אך הניקוד המרבי נשמר
                 streak = 0;
-                document.getElementById('streak').textContent = streak;
+                updateStatsDisplay();
+                saveProgress();
                 
-                document.getElementById('fail-text').innerHTML = `טליה, שמת פפרוני על ${toppedSlices}/${currentDenominator} מהפיצה.<br>הלקוח ביקש כמות ששווה ל-<b>${requiredSlicesToTop}/${currentDenominator}</b>.<br>אין דבר, טליה אלופה ותצליח בניסיון הבא!`;
+                // הסבר מנחה לעזרה קוגניטיבית לילד
+                let helperMessage = "";
+                if (toppedSlices < requiredSlicesToTop) {
+                    helperMessage = `טליה, שמת רק ${toppedSlices} פרוסות, חסר לך עוד כדי להגיע ל-${requiredSlicesToTop}! לחצי על עוד פרוסות פיצה.`;
+                } else {
+                    helperMessage = `טליה, שמת יותר מדי פפרוני (${toppedSlices} פרוסות). לחצי על חלק מפרוסות הפפרוני כדי להוריד אותן, עד שיישארו בדיוק ${requiredSlicesToTop}!`;
+                }
+
+                document.getElementById('fail-text').innerHTML = `טליה, כרגע שמת פפרוני על <b>${toppedSlices}/${currentDenominator}</b> מהפיצה.<br>הלקוח ביקש כמות ששווה בדיוק ל-<b>${targetFractionNum}/${targetFractionDen}</b> (כלומר ${requiredSlicesToTop} פרוסות מתוך ${currentDenominator}).`;
+                document.getElementById('helper-text').textContent = helperMessage;
+                
+                // פתיחת חלון העזרה; טליה מנסה שוב על אותה הפיצה
                 showModal('fail-modal');
             }
         }
@@ -549,7 +682,11 @@
         function closeModal(id) {
             document.getElementById('modal-overlay').classList.remove('active');
             document.getElementById(id).classList.remove('active');
-            if (id === 'success-modal' || id === 'fail-modal') startNewRound();
+            
+            // רק בהצלחה עוברים ללקוח הבא. בכישלון נשארים לתקן!
+            if (id === 'success-modal') {
+                startNewRound();
+            }
         }
     </script>
 </body>
