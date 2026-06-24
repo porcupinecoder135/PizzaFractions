@@ -45,6 +45,15 @@
             color: #2b1055;
         }
 
+        /* נגן יוטיוב מוסתר */
+        #yt-player-container {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         /* מסכים */
         .screen {
             display: none;
@@ -228,7 +237,13 @@
 </head>
 <body>
 
-    <button id="music-control" onclick="toggleMusic()">🎵 מוזיקה: כבויה</button>
+    <!-- כפתור שליטה במוזיקה עבור טליה -->
+    <button id="music-control" onclick="toggleMusic()">🎵 מוזיקה: מופעלת</button>
+
+    <!-- מיקום נגן המדיה המוסתר -->
+    <div id="yt-player-container">
+        <div id="player"></div>
+    </div>
 
     <h1>🍕 מטבח הפיצה של טליה! 🍕</h1>
 
@@ -248,7 +263,7 @@
         <div id="customer-zone">
             <div id="customer-avatar">🦊</div>
             <div id="customer-bubble">
-                <span id="customer-name">שועל רעב</span>: "היי השפית טליה! אני רוצה שחלק של 
+                <span id="customer-name">שועל רעב</span>: "היי שפית טליה! אני רוצה שחלק של 
                 <div class="fraction">
                     <div class="numerator" id="req-num">1</div>
                     <div class="denominator" id="req-den">2</div>
@@ -299,10 +314,57 @@
     </div>
 
     <script>
+        // חיבור ל-API הרשמי של YouTube לשליטה בנגינה ברקע
+        let player;
+        let isMusicPlaying = true; // ברירת מחדל: מופעלת
         let audioCtx = null;
-        let isMusicPlaying = false;
-        let musicNodes = []; 
 
+        // טעינת ה-API של יוטיוב
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1',
+                width: '1',
+                videoId: 'La4SaT461WI', // מזהה הסרטון של מריו
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'La4SaT461WI', // נדרש כדי שהלולאה תעבוד ביוטיוב
+                    'controls': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.setVolume(20); // הגדרת עוצמת קול חלשה ונעימה (20 מתוך 100)
+            if (isMusicPlaying) {
+                event.target.playVideo();
+            }
+        }
+
+        function toggleMusic() {
+            if (!player) return;
+            if (isMusicPlaying) {
+                player.pauseVideo();
+                isMusicPlaying = false;
+                document.getElementById('music-control').textContent = "🎵 מוזיקה: כבויה";
+            } else {
+                player.playVideo();
+                isMusicPlaying = true;
+                document.getElementById('music-control').textContent = "🎵 מוזיקה: מופעלת";
+            }
+        }
+
+        // אפקטים קוליים רכים (הצלחה/הפסד)
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -341,68 +403,13 @@
             }
         }
 
-        function startBackgroundMusic() {
-            initAudio();
-            if (isMusicPlaying) return;
-            isMusicPlaying = true;
-            document.getElementById('music-control').textContent = "🎵 מוזיקה: מופעלת";
-
-            let tempo = 120; 
-            let quarterNote = 60 / tempo;
-            let step = 0;
-
-            let notes = [261.63, 293.66, 329.63, 392.00, 349.23, 329.63, 293.66, 261.63];
-
-            function playNextBar() {
-                if (!isMusicPlaying) return;
-                
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'triangle'; 
-                osc.connect(gain); gain.connect(audioCtx.destination);
-
-                let currentNote = notes[step % notes.length];
-                if(step % 4 === 0) currentNote *= 0.5; 
-                
-                osc.frequency.setValueAtTime(currentNote, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.04, audioCtx.currentTime); 
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + quarterNote * 0.8);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + quarterNote * 0.8);
-                
-                musicNodes.push(osc);
-                step++;
-                
-                setTimeout(playNextBar, quarterNote * 1000);
-            }
-            playNextBar();
-        }
-
-        function stopBackgroundMusic() {
-            isMusicPlaying = false;
-            document.getElementById('music-control').textContent = "🎵 מוזיקה: כבויה";
-            musicNodes.forEach(node => { try { node.stop(); } catch(e){} });
-            musicNodes = [];
-        }
-
-        function toggleMusic() {
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            if (isMusicPlaying) {
-                stopBackgroundMusic();
-            } else {
-                startBackgroundMusic();
-            }
-        }
-
         // מאגר לקוחות שפונים לטליה
         const customers = [
             { name: "מפלצת הגבינה", avatar: "👹", greet: "היי שפית טליה! תכיני לי בבקשה " },
             { name: "חד-קרן רעב", avatar: "🦄", greet: "טליה המוכשרת! אני רוצה בדיוק " },
             { name: "חתול הפיצות", avatar: "🐱", greet: "מיאו טליה! המלכות מבקשת " },
             { name: "חייזר השברים", avatar: "👽", greet: "שלום טליה מכדור הארץ! אני צריך " },
-            { name: "דובי הרוטב", avatar: "🐻", greet: "יאמי טליה! תוכלי להכין לי " }
+            { name: "דובי השוקולד", avatar: "🐻", greet: "יאמי טליה! תוכלי להכין לי " }
         ];
 
         let currentLevel = 'easy';
@@ -418,6 +425,9 @@
 
         function startGame(level) {
             initAudio();
+            // הפעלת מוזיקה לפי הצורך ברגע האינטראקציה הראשון
+            if (player && isMusicPlaying) { try { player.playVideo(); } catch(e){} }
+            
             currentLevel = level;
             document.getElementById('home-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
@@ -451,7 +461,6 @@
                 targetFractionDen = currentDenominator / gcd;
             }
 
-            // החלפת הטקסט של בועת הדיבור של הלקוח בצורה דינמית
             const bubble = document.getElementById('customer-bubble');
             bubble.innerHTML = `<span id="customer-name">${customer.name}</span>: "${customer.greet} 
                 <div class="fraction">
